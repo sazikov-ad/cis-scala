@@ -3,6 +3,7 @@ package homeworks.homework3
 import java.util.concurrent.TimeUnit
 
 import cats.effect.{Clock, ExitCode, IO, IOApp}
+import cats.syntax.all._
 
 import scala.util.Random
 import scala.concurrent.duration._
@@ -12,12 +13,14 @@ object task1 extends IOApp {
   // Реализуйте функцию map3, которая комбинирует значения из трех IO в одно с помощью функции f (см. примеры).
   //
   // Продвинутая версия (не обязательно): вычислять IO[A], IO[B], IO[C] одновременно, а не последовательно
-  def map3[A, B, C, D](fa: IO[A], fb: IO[B], fc: IO[C])(f: (A, B, C) => D): IO[D] = ???
+  def map3[A, B, C, D](fa: IO[A], fb: IO[B], fc: IO[C])(f: (A, B, C) => D): IO[D] = for {
+    r <- (fa, fb, fc).parMapN(f)
+  } yield r
 
 
   // Служебные функции для примеров
   val randomString: IO[String] =
-    IO{
+    IO {
       val string = Random.alphanumeric.take(Random.nextInt(4) + 1).mkString
       println(string)
       string
